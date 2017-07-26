@@ -4,6 +4,7 @@ import os
 import socket
 import pickle
 import datetime
+import random
 
 # Connect to Redis
 r =  redis.StrictRedis(host='redis', port=6379, db=0)
@@ -50,10 +51,10 @@ def write_message():
              'author': author,
              'date': date,
              'location': location}
-    r.set(str(hash(frozenset(entry))), pickle.dumps(entry))
+    r.set(date + str(random.random())[:4], pickle.dumps(entry))
     return jsonify(entry), 201
 
-@app.route('/counter')
+@app.route('/counter', methods=['GET'])
 def message_count():
     return jsonify({'message count': len(r.keys())})
 
