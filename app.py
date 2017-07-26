@@ -3,33 +3,28 @@ import redis
 import os
 import socket
 import pickle
+import datetime
 
 # Connect to Redis
-# r =  redis.StrictRedis(host='localhost', port=6379, db=0)
-entries = []
+r =  redis.StrictRedis(host='redis', port=6379, db=0)
 
 app = Flask(__name__)
 
 @app.route("/")
 def hello():
-    try:
-        visits = redis.incr("counter")
-    except RedisError:
-        visits = "<i>cannot connect to Redis, counter disabled</i>"
-
     html = "<h3>Hello {name}!</h3>" \
-           "<b>Hostname:</b> {hostname}<br/>" \
-           "<b>Visits:</b> {visits}"
-    return html.format(name=os.getenv("NAME", "world"), hostname=socket.gethostname(), visits=visits)
+           "<b>Hostname:</b> {hostname}<br/>"
+    return html.format(name=os.getenv("NAME", "world"), hostname=socket.gethostname())
 
 
 @app.route('/message', methods=['GET'])
 def get_message():
     # read and return message from db
-    # TODO: need to handle empty db
-    # key = r.randomkey()
-    # return jsonify(pickle.loads(redis.get(key)))
-    return jsonify(entries.pop()) if entries else jsonify({'message': 'no bottles!'})
+    key = r.randomkey()
+    serialised_entry = r.get(key)
+    r.delete(key)
+    return jsonify(pickle.loads(serialised_entry)) if serialised_entry \
+        else jsonify({'message': 'no bottles!'})
 
 @app.errorhandler(404)
 def not_found(error):
@@ -40,18 +35,24 @@ def write_message():
     if not request.json or not 'message' in request.json:
         abort(400)
     # add to db
-    author, date = '', ''
+    author, location = '', ''
     if 'author' in request.json:
         author = request.json['author']
-    if 'date' in request.json:
-        date = request.json['date']
+    if 'location' in request.json:
+        location = request.json['location']
+
+    date = '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
 
     entry = {'message': request.json['message'],
              'author': author,
-             'date': date}
-    # r.set(str(hash(frozenset(entry))), pickle.dumps(entry))
-    entries.append(entry)
+             'date': date,
+             'location': location}
+    r.set(str(hash(frozenset(entry))), pickle.dumps(entry))
     return jsonify(entry), 201
+
+@app.route('/message', methods=['PUT'])
+def amend_message():
+    pass
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=80)
