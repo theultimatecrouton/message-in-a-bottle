@@ -22,9 +22,12 @@ def get_message():
     # read and return message from db
     key = r.randomkey()
     serialised_entry = r.get(key)
-    r.delete(key)
-    return jsonify(pickle.loads(serialised_entry)) if serialised_entry \
-        else jsonify({'message': 'no bottles!'})
+
+    if serialised_entry:
+        r.delete(key)
+        return jsonify(pickle.loads(serialised_entry))
+    return jsonify({'message': 'no bottles!'})
+
 
 @app.errorhandler(404)
 def not_found(error):
@@ -50,9 +53,10 @@ def write_message():
     r.set(str(hash(frozenset(entry))), pickle.dumps(entry))
     return jsonify(entry), 201
 
-@app.route('/message', methods=['PUT'])
-def amend_message():
-    pass
+@app.route('/counter')
+def message_count():
+    return jsonify({'message count': len(r.keys())})
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=80)
