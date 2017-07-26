@@ -11,9 +11,9 @@ e.g. `curl -i http://host/message`
 Returns JSON:
 ```
 {
-  "author": "Tom", 
-  "date": "2017-07-26 21:03:49", 
-  "location": "London", 
+  "author": "Tom",
+  "date": "2017-07-26 21:03:49",
+  "location": "London",
   "message": "Greetings from London"
 }
 ```
@@ -25,3 +25,5 @@ Expects JSON with at least the "message" field. Can also populate "location" and
 
 e.g. `curl -H "Content-Type: application/json" -X POST -d '{"message":"Why would you burn... the rum", "author":"Jack Sparrow", "location":"Tortuga"}' http://host/message`
 
+### `GET /counter`
+Returns the number of messages currently out on the seas
