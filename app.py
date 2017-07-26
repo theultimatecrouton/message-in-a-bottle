@@ -12,9 +12,9 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello():
-    html = "<h3>Hello {name}!</h3>" \
-           "<b>Hostname:</b> {hostname}<br/>"
-    return html.format(name=os.getenv("NAME", "world"), hostname=socket.gethostname())
+    html = "<h3>Welcome to message in a bottle</h3>" \
+           "<b>Refer to https://github.com/theultimatecrouton/message-in-a-bottle for API usage<br/>"
+    return html
 
 
 @app.route('/message', methods=['GET'])
