@@ -4,6 +4,8 @@ Read a message or send off a message in a bottle!
 ## Usage
 
 ### `GET /message`
+Returns a random message from a bottle. These are read once before being gone forever so make the most of it...
+
 Returns JSON:
 ```
 {
