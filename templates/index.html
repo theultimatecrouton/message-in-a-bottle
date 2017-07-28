@@ -1,0 +1,12 @@
+<!doctype html>
+<link rel="shortcut icon" href="{{ url_for('static', filename='bottle_icon.jpg') }}">
+<h3>Welcome to message in a bottle</h3>
+ <form action="{{ url_for('write_message') }}" method="post">
+    Message:<br>
+    <input type="text" name="message"><br>
+    Author:<br>
+    <input type="author" name="author"><br>
+    Location:<br>
+    <input type="location" name="location"><br>
+    <input type="submit" value="Send message to the high seas!">
+</form>

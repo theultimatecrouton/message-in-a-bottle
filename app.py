@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, make_response, request, abort
+from flask import Flask, jsonify, make_response, request, abort, render_template
+from werkzeug.exceptions import BadRequest
 import redis
 import os
 import socket
@@ -11,11 +12,10 @@ r =  redis.StrictRedis(host='redis', port=6379, db=0)
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def hello():
-    html = "<h3>Welcome to message in a bottle</h3>" \
-           "<b>Refer to https://github.com/theultimatecrouton/message-in-a-bottle for API usage<br/>"
-    return html
+    return render_template("index.html")
 
 
 @app.route('/message', methods=['GET'])
@@ -36,18 +36,30 @@ def not_found(error):
 
 @app.route('/message', methods=['POST'])
 def write_message():
-    if not request.json or not 'message' in request.json:
+    # try:
+    #     data = request.get_json()
+    # except (TypeError, BadRequest):
+    #     data = request.form
+    if request.json:
+        request_to_use = request.json
+    elif request.form:
+        request_to_use = request.form
+    else:
         abort(400)
+    if not 'message' in request_to_use:
+        abort(400)
+
     # add to db
+    message = request_to_use['message']
     author, location = '', ''
-    if 'author' in request.json:
-        author = request.json['author']
-    if 'location' in request.json:
-        location = request.json['location']
+    if 'author' in request_to_use:
+        author = request_to_use['author']
+    if 'location' in request_to_use:
+        location = request_to_use['location']
 
     date = '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
 
-    entry = {'message': request.json['message'],
+    entry = {'message': message,
              'author': author,
              'date': date,
              'location': location}
