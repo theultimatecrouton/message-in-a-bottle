@@ -1,15 +1,22 @@
 <!doctype html>
 <link rel="shortcut icon" href="{{ url_for('static', filename='bottle_icon.jpg') }}">
-<h3>Welcome to message in a bottle</h3>
- <form action="{{ url_for('write_message') }}" method="post">
-    Message:<br>
-    <input type="text" name="message"><br>
-    Author:<br>
-    <input type="author" name="author"><br>
-    Location:<br>
-    <input type="location" name="location"><br>
-    <input type="submit" value="Send message to the high seas!">
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+<h1>Welcome to Message In A Bottle</h1>
+<form action="{{ url_for('write_message') }}" method="post" class="form1">
+  <label>
+  Message:
+  <input type="text" name="message" />
+</label>
+<label>
+  Author:
+  <input type="author" name="author" />
+</label>
+<label>
+  Location:
+  <input type="location" name="location" />
+</label>
+  <input type="submit" value="Send message to the high seas!" />
 </form>
 <form action="{{ url_for('get_message') }}" method="get">
-  <input type="submit" value="Pop open a bottle!">
+  <input type="submit" value="Pop open a bottle!" />
 </form>
