@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, make_response, request, abort, render_template
+from flask import Flask, jsonify, make_response, request, abort, render_template, \
+ redirect, url_for
 from werkzeug.exceptions import BadRequest
 import redis
 import os
@@ -6,6 +7,7 @@ import socket
 import pickle
 import datetime
 import random
+
 
 # Connect to Redis
 r =  redis.StrictRedis(host='redis', port=6379, db=0)
@@ -34,12 +36,9 @@ def get_message():
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
+
 @app.route('/message', methods=['POST'])
 def write_message():
-    # try:
-    #     data = request.get_json()
-    # except (TypeError, BadRequest):
-    #     data = request.form
     if request.json:
         request_to_use = request.json
     elif request.form:
@@ -65,6 +64,7 @@ def write_message():
              'location': location}
     r.set(date + str(random.random())[:4], pickle.dumps(entry))
     return jsonify(entry), 201
+
 
 @app.route('/counter', methods=['GET'])
 def message_count():
